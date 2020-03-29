@@ -163,9 +163,9 @@ shinyApp(ui = ui, server = server)
 
 Extend the previous app so that you can also choose to select no continent, and hence see all countries. You’ll need to add "" to the list of choices, and then handle that specially when filtering.
 
-<div class="note">
+:::note
 Initially setting the choices to `c("", as.character(continents))` allows the user to see all the Country options prior to a continent being selected. That said, once a continent is selected this `""` option is no longer available?
-</div>
+:::
 
 ```{r, eval=FALSE}
 library(shiny)
