@@ -33,7 +33,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$year, {
     
-    req(isTruthy(input$year)) # stop if year is blank
+    req(input$year) # stop if year is blank
     daterange <- range(as.Date(paste0(input$year, "-01-01")),as.Date(paste0(input$year, "-12-31")))
     updateDateInput(session, "date", min = daterange[1], max = daterange[2] )
     delay(250,  # delay 250ms
@@ -379,9 +379,11 @@ server <- function(input, output, session) {
     # so for date check that input[[date]] in data[[1]]
     each_var <- map(vars(), ~ filter_var(data()[[.x]], input[[.x]]))
     
-    # what exactly is reduce doing here?
-    print(each_var)
-    print(reduce(each_var, `&`))
+    # notes from @mapaulacaldas
+    # collapse list of TRUE and FALSE using `&`
+    # conditions <- list(TRUE, TRUE, TRUE, FALSE)
+    # purrr::reduce(conditions, `&`) ==
+    # ((conditions[[1]] & conditions[[2]]) & conditions[[3]]) & conditions[[4]]
     reduce(each_var, `&`)
   })
   
