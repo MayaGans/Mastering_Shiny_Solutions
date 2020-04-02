@@ -165,6 +165,10 @@ Extend the previous app so that you can also choose to select no continent, and 
 
 :::note
 Initially setting the choices to `c("", as.character(continents))` allows the user to see all the Country options prior to a continent being selected. That said, once a continent is selected this `""` option is no longer available?
+
+Comment by `@_TanHo` - _You can use "All" instead of "" - not sure why it's recalculating continent when evaluated, reactivelog wasn't very helpful on it._
+
+_Also, you can use unique() to get an unnamed list if you don't want the extra label of "country" in the country dropdown, and don't need to "re-label" country if all you want is to populate choices_
 :::
 
 ```{r, eval=FALSE}
