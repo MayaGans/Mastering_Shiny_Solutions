@@ -174,7 +174,7 @@ library(gapminder)
 continents <- unique(gapminder$continent)
 
 ui <- fluidPage(
-  selectInput("continent", "Continent", choices = c("", as.character(continents))), 
+  selectInput("continent", "Continent", choices = c("All", as.character(continents))), 
   selectInput("country", "Country", choices = NULL),
   tableOutput("data")
 )
@@ -193,10 +193,8 @@ server <- function(input, output, session) {
   
   
   observeEvent( input$continent, {
-    updateSelectInput(session, "country", "Country",
-                      choices = selected_data() %>% 
-                        select(country) %>%
-                        distinct())
+    updateSelectInput(session, "country",
+                      choices = unique(selected_data()$country))
   })
   
   
