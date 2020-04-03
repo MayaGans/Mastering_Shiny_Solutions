@@ -465,6 +465,10 @@ shinyApp(ui = ui, server = server)
 
 (Hard) Make a wizard that allows the user to upload their own dataset. The first page should handle the upload. The second should handle reading it, providing one drop down for each variable that lets the user select the column type. The third page should provide some way to get a summary of the dataset.
 
+:::note
+I wasn't really sure what was meant by "some way to get a summary of the dataset" So I'm just using the summary function.
+:::
+
 ```{r, eval=FALSE}
 library(shiny)
 library(readr)
@@ -561,3 +565,4 @@ server <- function(input, output, session) {
 
 shinyApp(ui = ui, server = server)
 ```
+
