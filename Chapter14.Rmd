@@ -1,0 +1,121 @@
+---
+  title: "Chapter 14"
+author: "Maya Gans"
+date: "3/29/2020"
+output: html_document
+css: styles.css
+---
+  
+# 14.6.1
+  
+The following app plots user selected variables from the `msleep` dataset for three different types of mammals (carnivores, omnivores, and herbivores), with one tab for each type of mammal. Remove the redundancy in the `selectInput()` definitions with the use of functions
+
+```{r, eval=FALSE}
+library(tidyverse)
+
+ui <- fluidPage(
+  selectInput(inputId = "x",
+              label = "X-axis:",
+              choices = c("sleep_total", "sleep_rem", "sleep_cycle", 
+                          "awake", "brainwt", "bodywt"),
+              selected = "sleep_rem"),
+  selectInput(inputId = "y",
+              label = "Y-axis:",
+              choices = c("sleep_total", "sleep_rem", "sleep_cycle", 
+                          "awake", "brainwt", "bodywt"),
+              selected = "sleep_total"),
+  tabsetPanel(id = "vore",
+              tabPanel("Carnivore",
+                       plotOutput("plot_carni")),
+              tabPanel("Omnivore",
+                       plotOutput("plot_omni")),
+              tabPanel("Herbivore",
+                       plotOutput("plot_herbi")))
+)
+
+server <- function(input, output, session) {
+
+  # make subsets
+  carni <- reactive( filter(msleep, vore == "carni") )
+  omni  <- reactive( filter(msleep, vore == "omni")  )
+  herbi <- reactive( filter(msleep, vore == "herbi") )
+
+  # make plots
+  output$plot_carni <- renderPlot({
+    ggplot(data = carni(), aes_string(x = input$x, y = input$y)) +
+      geom_point()
+  })
+  output$plot_omni <- renderPlot({
+    ggplot(data = omni(), aes_string(x = input$x, y = input$y)) +
+      geom_point()
+  })
+  output$plot_herbi <- renderPlot({
+    ggplot(data = herbi(), aes_string(x = input$x, y = input$y)) +
+      geom_point()
+  })
+
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+# 14.6.2
+
+Continue working with the same app from the previous exercise, and further remove redundancy in the code by modularizing how subsets and plots are created.
+
+# 14.6.3
+
+Suppose you have an app that is slow to launch when a user visits it. Can
+modularizing your app code help solve this problem? Explain your reasoning.
+
+# 14.6.4
+
+Example passing `input$foo` to reactive and it not working.
+
+# 14.6.5
+
+The following module input provides a text control that lets you type a date in ISO8601 format (yyyy-mm-dd). Complete the module by providing a server function that uses the “error” output to display a message if the entered value is not a valid date. You can use `strptime(x, "%Y-%m-%d")` to parse the string; it will return `NA` if the value isn’t a valid date.
+
+```{r, eval=FALSE}
+ymdDateInput <- function(id, label) {
+  label <- paste0(label, " (yyyy-mm-dd)")
+
+  fluidRow(
+    textInput(NS(id, "date"), label),
+    textOutput(NS(id, "error"))
+  )
+}
+```
+
+# 14.6.6
+
+Rewrite `selectVarServer()` so that both `data` and `filter` are reactive. Pair it with a app function that lets the user pick the `dataset` with the dataset module, a function with an `inputSelect()` that lets the user filter for numeric, character, or factor variables.
+
+
+# 14.6.7
+
+The following code defines output and server components of a module that takes a numeric input and produces a bulleted list of three summary statistics. Create an app function that allows you to experiment with it. The app function should take a data frame as input, and use `numericVarSelectInput()` to pick the variable to summarise.
+
+```{r}
+summaryOuput <- function(id) {
+  tags$ul(
+    tags$li("Min: ", textOutput(NS(id, "min"), inline = TRUE)),
+    tags$li("Max: ", textOutput(NS(id, "max"), inline = TRUE)),
+    tags$li("Missing: ", textOutput(NS(id, "n_na"), inline = TRUE))
+  )
+}
+
+summaryServer <- function(id, var) {
+  moduleServer(id, function(input, output, session) {
+    rng <- reactive({
+      req(var())
+      range(var(), na.rm = TRUE)
+    })
+
+    output$min <- renderText(rng()[[1]])
+    output$max <- renderText(rng()[[2]])
+    output$n_na <- renderText(sum(is.na(var())))
+  })
+}
+```
